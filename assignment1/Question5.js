@@ -1,5 +1,6 @@
 //QUESTION FIVE
-// REMOVING DUPLICATES FROM A STRING
+// Write a function to remove duplicate characters from a string while
+// preserving the order of the first appearance of each character.
 function removeDuplicates(str) {
     let result = "";
     for (let i = 0; i < str.length; i++) {

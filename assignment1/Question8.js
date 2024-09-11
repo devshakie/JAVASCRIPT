@@ -1,4 +1,6 @@
 //QUESTION EIGHT
+//Modify the palindrome function to be case insensitive, meaning it should ignore
+// upper and lower case differences when checking for a palindrome.
 function isPalindrome(str) {
     // Remove non-alphanumeric characters and convert the string to lowercase
     let cleanedStr = str.toLowerCase().replace(/[^a-z0-9]/g, "");

@@ -1,4 +1,6 @@
 //QUESTION SEVEN
+//Write a function to find the longest common prefix string amongst an array of strings. 
+//If there is no common prefix, return an empty string.
 function longestCommonPrefix(strs) {
     // If the array is empty, return "-1"
     if (strs.length === 0) return "-1";

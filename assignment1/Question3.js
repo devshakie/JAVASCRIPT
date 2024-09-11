@@ -1,4 +1,6 @@
 // QUESTION THREE
+//Write a function to find the longest palindromic substring in a given string.
+
 function isPalindrome(s) {
     return s === s.split("").reverse().join("");
   }
