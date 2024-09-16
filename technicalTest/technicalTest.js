@@ -125,15 +125,11 @@ console.log(parseURL(url));
 
 // Write a JavaScript function to retrieve all the names of an object's own and inherited properties.
 function getAllPropertyNames(obj) {
-    let properties = [];
-    for (let key in obj) {
-        properties.push(key);
-    }
-
-    return properties;
+    return Object.getOwnPropertyNames(obj);
 }
 
 console.log(getAllPropertyNames(Array.prototype));
+
 
 
 
