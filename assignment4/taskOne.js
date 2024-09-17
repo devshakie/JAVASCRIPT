@@ -51,55 +51,50 @@ const users = [
       ]
     }
 ];
-  
-// Set the date to one week ago
-const oneWeekAgo = () => {
-    const date = new Date();
-    date.setDate(date.getDate() - 7);
-    return date;
-};
-
-// Filter active users
-function userAnalysis(users) {
-    const oneWeekAgoDate = oneWeekAgo();
-    return users.filter((user) => {
-        return user.posts.some(post => new Date(post.timestamp) >= oneWeekAgoDate);
-    });
-}
-
-// Extract popular posts 
-function popularPosts(activeUsers) {
-    return activeUsers.map((user) => {
-        const popularPosts = user.posts.filter(post => post.likes >= 10);
-        return { ...user, popularPosts }; // user with their popular posts
-    }).filter(user => user.popularPosts.length > 0); // Keep only users with popular posts
-}
-
-
 function analyzeUsers(users) {
-    const activeUsers = userAnalysis(users); // Get active users
-    const activeUsersWithPopularPosts = popularPosts(activeUsers); // Get active users with popular posts
-
-    // Reduce to calculate total likes and popular posts
-    const { totalLikes, totalPopularPosts } = activeUsersWithPopularPosts.reduce(
-        (acc, user) => {
-            const userLikes = user.popularPosts.reduce((likes, post) => likes + post.likes, 0);
-            return {
-                totalLikes: acc.totalLikes + userLikes,
-                totalPopularPosts: acc.totalPopularPosts + user.popularPosts.length
-            };
-        },
-        { totalLikes: 0, totalPopularPosts: 0 }
-    );
-
-    //Calculate the average likes per active user
-    const totalActiveUsers = activeUsersWithPopularPosts.length;
-    const averageLikesPerActiveUser = totalActiveUsers > 0 ? totalLikes / totalActiveUsers : 0;
-
-    console.log(`Total Likes: ${totalLikes}`);
-    console.log(`Total Popular Posts: ${totalPopularPosts}`);
-    console.log(`Average Likes Per Active User: ${averageLikesPerActiveUser}`);
-}
-
-
-analyzeUsers(users);
+    // Set the date to one week ago
+    const oneWeekAgo = () => {
+      const date = new Date();
+      date.setDate(date.getDate() - 7);
+      return date;
+    };
+  
+    const oneWeekAgoDate = oneWeekAgo();
+    console.log("One week ago:", oneWeekAgoDate); 
+  
+    // Filter active users with posts within the last week
+    const activeUsers = users.filter(user => {
+      const isActive = user.posts.some(post => new Date(post.timestamp) >= oneWeekAgoDate);
+     return isActive;
+    });
+  
+    console.log("Active Users:", activeUsers); 
+  
+    // Extract popular posts with at least 10 likes
+    const popularPostsPerUser = activeUsers.map(user => ({
+      name: user.name,
+      popularPosts: user.posts.filter(post => post.likes >= 10)
+    }));
+  
+    console.log("Popular Posts Per User:", popularPostsPerUser); 
+  
+    const totalLikes = popularPostsPerUser.reduce((total, user) => {
+      const likesForUser = user.popularPosts.reduce((sum, post) => sum + post.likes, 0);
+      return total + likesForUser;
+    }, 0);
+  
+    const totalPopularPosts = popularPostsPerUser.reduce((count, user) => count + user.popularPosts.length, 0);
+  
+    // Calculate the average likes per active user
+    const averageLikesPerUser = activeUsers.length > 0 ? totalLikes / activeUsers.length : 0;
+  
+    return {
+      activeUserCount: activeUsers.length,
+      totalPopularPosts,
+      averageLikesPerUser
+    };
+  }
+  
+  const result = analyzeUsers(users);
+  console.log(result);
+  
