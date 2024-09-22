@@ -13,7 +13,7 @@ async function fetchEvents() {
 
   try {
     const data = await fetchWithRetry("http://localhost:3000/eventsData");
-    localStorage.setItem(CACHE_KEY, JSON.stringify(data)); // Cache the fetched data
+    localStorage.setItem(CACHE_KEY, JSON.stringify(data)); 
     const eventsToRender = showingFavorites 
       ? data.filter(event => favoriteEvents.includes(event.id)) 
       : data;
@@ -32,7 +32,7 @@ async function fetchWithRetry(url, retries = MAX_RETRIES) {
       if (!response.ok) throw new Error("Network response was not ok");
       return await response.json();
     } catch (error) {
-      if (i === retries - 1) throw error; // Rethrow if last attempt fails
+      if (i === retries - 1) throw error; 
     }
   }
 }
@@ -40,8 +40,8 @@ async function fetchWithRetry(url, retries = MAX_RETRIES) {
 // Render events and add event listeners for favorite buttons
 function renderEvents(eventsData) {
   const eventsContainer = document.getElementById("events-container");
-  eventsContainer.innerHTML = ""; // Clear previous content
-  const fragment = document.createDocumentFragment(); // Use a document fragment for efficient rendering
+  eventsContainer.innerHTML = "";
+  const fragment = document.createDocumentFragment(); 
 
   eventsData.forEach((event) => {
     const isFavorite = favoriteEvents.includes(event.id);
@@ -88,15 +88,15 @@ function lazyLoadImages() {
     entries.forEach(entry => {
       if (entry.isIntersecting) {
         const img = entry.target;
-        img.src = img.dataset.src; // Set the actual image source
-        img.classList.remove('lazy-load'); // Remove the class once loaded
-        observer.unobserve(img); // Stop observing the loaded image
+        img.src = img.dataset.src; 
+        img.classList.remove('lazy-load'); 
+        observer.unobserve(img); 
       }
     });
   });
 
   lazyImages.forEach(image => {
-    observer.observe(image); // Observe each image for lazy loading
+    observer.observe(image); 
   });
 }
 
@@ -116,10 +116,56 @@ function toggleFavorite(eventId) {
   }
 
   localStorage.setItem('favoriteEvents', JSON.stringify(favoriteEvents));
-  fetchEvents(); // Re-render events to reflect the changes
+  fetchEvents();
 }
 
-// Sorting and filtering functionality remains the same...
+
+const sortByPriceAscButton = document.getElementById("price-asc");
+const sortByDateAscButton = document.getElementById("date-asc");
+const sortByPriceDescButton = document.getElementById("price-desc");
+const sortByDateDescButton = document.getElementById("date-desc");
+const viewFavoritesButton = document.getElementById("view-favorites");
+
+// Toggle between all events and favorites view
+viewFavoritesButton.addEventListener("click", () => {
+  showingFavorites = !showingFavorites;
+  viewFavoritesButton.textContent = showingFavorites ? "View All Events" : "View Favorites";
+  fetchEvents();
+});
+
+// Fetch and sort events data
+const fetchData = async (sortOption = null) => {
+  const response = await fetch("http://localhost:3000/eventsData");
+  const data = await response.json();
+
+  // Sort data based on the sortOption
+  if (sortOption === "price-asc") {
+    data.sort((a, b) => a.price - b.price);
+  } else if (sortOption === "price-desc") {
+    data.sort((a, b) => b.price - a.price);
+  } else if (sortOption === "date-asc") {
+    data.sort((a, b) => new Date(a.date) - new Date(b.date));
+  } else if (sortOption === "date-desc") {
+    data.sort((a, b) => new Date(b.date) - new Date(a.date));
+  }
+
+  // Render the sorted events
+  renderEvents(data);
+};
+
+
+sortByPriceAscButton.addEventListener("click", () => {
+  fetchData("price-asc");
+});
+sortByPriceDescButton.addEventListener("click", () => {
+  fetchData("price-desc");
+});
+sortByDateAscButton.addEventListener("click", () => {
+  fetchData("date-asc");
+});
+sortByDateDescButton.addEventListener("click", () => {
+  fetchData("date-desc");
+});
 
 // Initial render of events
 fetchEvents();

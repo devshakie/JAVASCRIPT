@@ -95,7 +95,7 @@
  function deleteProductFromCart(productId) {
      const productIndex = cart.findIndex(item => item.id === productId);
      if (productIndex !== -1) {
-         cart.splice(productIndex, 1); // Remove the product from the cart
+         cart.splice(productIndex, 1); 
          updateCartUI();
      }
  }
